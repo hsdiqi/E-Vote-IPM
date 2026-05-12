@@ -1,26 +1,18 @@
-import { delay, mockAdmins } from '@/utils/mockData'
+import {apiPublic, apiPrivate} from "./api";
 
 export const authService = {
   async login(payload) {
-    await delay(600)
-    const admin = mockAdmins.find(a => a.username === payload.username)
-    if (!admin || payload.password !== 'password123') {
-      throw { response: { data: { message: 'Username atau password salah' }, status: 401 } }
-    }
-    return {
-      data: {
-        token: 'mock-jwt-token-' + admin.id,
-        token_refresh: 'mock-refresh-' + admin.id,
-        admin
-      }
-    }
+    const res = await apiPublic.post("/_auth/login", payload);
+    return res.data; // return JSON backend
   },
 
-  async me() {
-    await delay(300)
-    const adminId = localStorage.getItem('adminId')
-    const admin = mockAdmins.find(a => a.id === adminId)
-    if (!admin) throw { response: { status: 401 } }
-    return { data: admin }
+  // async me() {
+  //   const res = await api.get("/_auth/me"); // atau "/_admin/me"
+  //   return res.data;
+  // },
+
+  async logout() {
+    const res = await apiPrivate.post("/_auth/logout");
+    return res;
   }
-}
+};

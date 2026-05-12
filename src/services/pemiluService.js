@@ -1,49 +1,33 @@
-import { delay, mockPemilu } from '@/utils/mockData'
-import { generateId } from '@/utils/helpers'
-
-let pemiluList = [...mockPemilu]
+import { generateId } from "@/utils/helpers";
+import {apiPrivate, apiPublic} from "./api";
 
 export const pemiluService = {
   async getAll() {
-    await delay()
-    return { data: [...pemiluList] }
+    try {
+      const res = await apiPrivate.get("/pemilu");
+      if (res.status !== 200) return [];
+      return res.data.data ?? [];
+    } catch (err) {
+      console.log("error brader: ", err)
+      if (err.response?.status === 404) return [];
+      throw err;
+    } 
   },
   async getById(id) {
-    await delay(200)
-    const pemilu = pemiluList.find(p => p.id === id)
-    if (!pemilu) throw { response: { data: { message: 'Pemilu tidak ditemukan' }, status: 404 } }
-    return { data: pemilu }
+    const res = await apiPrivate.get(`/pemilu/${id}`)
+    return res.data.data
   },
   async create(payload) {
-    await delay(500)
-    const exists = pemiluList.find(p => p.prefix === payload.prefix)
-    if (exists) throw { response: { data: { message: 'Prefix sudah digunakan' }, status: 400 } }
-    const newPemilu = {
-      id: 'pemilu-' + generateId(),
-      name: payload.name,
-      prefix: payload.prefix,
-      start_time: payload.start_time || null,
-      end_time: payload.end_time || null,
-      is_active: false,
-      max_choices: payload.max_choices || 1,
-      created_at: new Date().toISOString(),
-      updated_at: null
-    }
-    pemiluList.push(newPemilu)
-    return { data: newPemilu }
+    const res = await apiPrivate.post("/pemilu", payload)
+    if (res.status !== 201 && res.status !== 200) return null
+    return res
   },
   async update(id, payload) {
-    await delay(400)
-    const idx = pemiluList.findIndex(p => p.id === id)
-    if (idx < 0) throw { response: { data: { message: 'Pemilu tidak ditemukan' }, status: 404 } }
-    pemiluList[idx] = { ...pemiluList[idx], ...payload, updated_at: new Date().toISOString() }
-    return { data: pemiluList[idx] }
+    const res = await apiPrivate.patch(`/pemilu/${id}`, payload)
+    return res
   },
   async delete(id) {
-    await delay(400)
-    const idx = pemiluList.findIndex(p => p.id === id)
-    if (idx < 0) throw { response: { data: { message: 'Pemilu tidak ditemukan' }, status: 404 } }
-    pemiluList.splice(idx, 1)
-    return { data: { message: 'Pemilu berhasil dihapus' } }
-  }
-}
+    const res = await apiPrivate.delete(`/pemilu/${id}`)
+    return res
+  },
+};

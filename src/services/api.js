@@ -1,27 +1,27 @@
-import axios from 'axios'
-import { useAuthStore } from '@/stores/auth'
+import axios from "axios";
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
+const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+
+export const apiPublic = axios.create({
+  baseURL,
   timeout: 10000,
-  headers: { 'Content-Type': 'application/json' }
-})
+  headers: { "Content-Type": "application/json" },
+});
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
-  if (token) config.headers.Authorization = `Bearer ${token}`
-  return config
-})
+export const apiPrivate = axios.create({
+  baseURL,
+  timeout: 10000,
+  withCredentials: true,
+  headers: { "Content-Type": "application/json" },
+});
 
-api.interceptors.response.use(
+// interceptor khusus private
+apiPrivate.interceptors.response.use(
   (res) => res,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      window.location.href = '/session-expired'
+      window.location.href = "/session-expired";
     }
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
-)
-
-export default api
+);

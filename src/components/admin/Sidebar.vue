@@ -12,7 +12,7 @@
       </div>
       <Transition name="fade-text">
         <div v-if="!collapsed">
-          <p class="text-sm font-display font-bold text-slate-900 dark:text-white leading-none">E-Vote</p>
+          <p class="text-sm font-display font-bold text-slate-900 dark:text-white leading-none">E-Vote IPM</p>
           <p class="text-[10px] text-slate-400 mt-0.5">Admin Panel</p>
         </div>
       </Transition>

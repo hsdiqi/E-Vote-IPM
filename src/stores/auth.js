@@ -8,19 +8,19 @@ export const useAuthStore = defineStore('auth', () => {
   const loading = ref(false)
   const error = ref(null)
 
-  const isAuthenticated = computed(() => !!token.value && !!admin.value)
+  // const isAuthenticated = computed(() => !!token.value && !!admin.value)
+  const isAuthenticated = ref(false)
 
   async function login(credentials) {
     loading.value = true
     error.value = null
     try {
-      const { data } = await authService.login(credentials)
-      token.value = data.token
-      admin.value = data.admin
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('adminId', data.admin.id)
-      localStorage.setItem('admin', JSON.stringify(data.admin))
-      return data
+      const res = await authService.login(credentials)
+      if (res.status_code === 200 || res.status === 200) {
+        isAuthenticated.value = true
+      } 
+      
+      return true
     } catch (err) {
       error.value = err?.response?.data?.message || 'Login gagal'
       throw err
@@ -29,13 +29,5 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  function logout() {
-    token.value = null
-    admin.value = null
-    localStorage.removeItem('token')
-    localStorage.removeItem('adminId')
-    localStorage.removeItem('admin')
-  }
-
-  return { token, admin, loading, error, isAuthenticated, login, logout }
+  return { token, admin, loading, error, isAuthenticated, login }
 })
