@@ -301,7 +301,7 @@ const pemilihList = ref([]);
 const stats = computed(() => ({
   totalPemilu: pemiluList.value.length,
   aktivPemilu: pemiluList.value.filter((p) => p.is_active).length,
-  totalKandidat: kandidatList.value.length,
+  totalKandidat: kandidatList.value.length, 
   totalPemilih: pemilihList.value.length,
 }));
 
@@ -336,14 +336,20 @@ const quickActions = [
 ];
 
 onMounted(async () => {
-  const [p, k, pm] = await Promise.all([
-    pemiluService.getAll(),
-    kandidatService.getAll(),
-    pemilihService.getAll(),
-  ]);
-  pemiluList.value = p;
-  kandidatList.value = k.data;
-  pemilihList.value = pm.data;
-  loading.value = false;
+  loading.value = true;
+
+  try {
+    const [p, k, pm] = await Promise.all([
+      pemiluService.getAll(),
+      kandidatService.getAll(),
+      pemilihService.getAll(),
+    ]);
+
+    pemiluList.value = p || [];
+    kandidatList.value = k || [];
+    pemilihList.value = pm?.data || [];
+  } finally {
+    loading.value = false;
+  }
 });
 </script>

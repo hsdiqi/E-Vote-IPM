@@ -21,8 +21,8 @@
           {{ adminInitial }}
         </div>
         <div class="hidden sm:block">
-          <p class="text-xs font-semibold text-slate-700 dark:text-slate-300 leading-none">{{ auth.admin?.username }}</p>
-          <p class="text-[10px] text-slate-400 mt-0.5 capitalize">{{ auth.admin?.role || 'Admin' }}</p>
+          <p class="text-xs font-semibold text-slate-700 dark:text-slate-300 leading-none">{{ auth.user?.username }}</p>
+          <p class="text-[10px] text-slate-400 mt-0.5 capitalize">{{ auth.user?.role || 'Admin' }}</p>
         </div>
       </div>
     </div>
@@ -40,5 +40,5 @@ const props = defineProps({
 })
 
 const auth = useAuthStore()
-const adminInitial = computed(() => (auth.admin?.username || 'A').charAt(0).toUpperCase())
+const adminInitial = computed(() => (auth.user?.username || 'A').charAt(0).toUpperCase())
 </script>

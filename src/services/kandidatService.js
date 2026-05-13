@@ -1,46 +1,41 @@
 import { delay, mockKandidat } from '@/utils/mockData'
 import { generateId } from '@/utils/helpers'
 
+import { apiPrivate, apiPublic } from './api'
+
 let kandidatList = [...mockKandidat]
 
 export const kandidatService = {
   async getAll(id_pemilu) {
-    await delay()
-    const list = id_pemilu ? kandidatList.filter(k => k.id_pemilu === id_pemilu) : [...kandidatList]
-    return { data: list }
+    try{
+      const res = await apiPrivate.get('/kandidat')
+      return res.data.data
+    } catch(err){
+      console.log(err)
+      throw err
+    }
   },
   async getById(id) {
-    await delay(200)
-    const k = kandidatList.find(k => k.id === id)
-    if (!k) throw { response: { data: { message: 'Kandidat tidak ditemukan' }, status: 404 } }
-    return { data: k }
+    try{
+      const res = await apiPrivate.get(`/kandidat/${id}`)
+      return res.data.data
+    } catch(err){
+      console.log(err)
+      throw err
+    }
   },
   async create(payload) {
-    await delay(500)
-    const newK = {
-      id: 'k-' + generateId(),
-      id_pemilu: payload.id_pemilu,
-      name: payload.name,
-      photo_url: payload.photo_url || null,
-      nomor_anggota: payload.nomor_anggota || null,
-      created_at: new Date().toISOString(),
-      updated_at: null
-    }
-    kandidatList.push(newK)
-    return { data: newK }
+    const res = await apiPrivate.post("/kandidat", payload)
+    if (res.status !== 201 && res.status !== 200) return null
+    return res
   },
   async update(id, payload) {
-    await delay(400)
-    const idx = kandidatList.findIndex(k => k.id === id)
-    if (idx < 0) throw { response: { data: { message: 'Kandidat tidak ditemukan' }, status: 404 } }
-    kandidatList[idx] = { ...kandidatList[idx], ...payload, updated_at: new Date().toISOString() }
-    return { data: kandidatList[idx] }
+    const res = await apiPrivate.patch(`/kandidat/${id}`, payload)
+    if (res.status !== 200) null
+    return res
   },
   async delete(id) {
-    await delay(400)
-    const idx = kandidatList.findIndex(k => k.id === id)
-    if (idx < 0) throw { response: { data: { message: 'Kandidat tidak ditemukan' }, status: 404 } }
-    kandidatList.splice(idx, 1)
-    return { data: { message: 'Kandidat berhasil dihapus' } }
+    const res = await apiPrivate.delete(`/kandidat/${id}`)
+    return res
   }
 }
