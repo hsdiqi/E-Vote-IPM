@@ -1,4 +1,5 @@
 import axios from "axios";
+import { setupInterceptors } from "./interceptor";
 
 const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
@@ -16,12 +17,4 @@ export const apiPrivate = axios.create({
 });
 
 // interceptor khusus private
-apiPrivate.interceptors.response.use(
-  (res) => res,
-  (error) => {
-    if (error.response?.status === 401) {
-      window.location.href = "/session-expired";
-    }
-    return Promise.reject(error);
-  }
-);
+setupInterceptors(apiPrivate);
