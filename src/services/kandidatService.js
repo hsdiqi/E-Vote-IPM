@@ -11,7 +11,6 @@ export const kandidatService = {
       const res = await apiPrivate.get('/kandidat')
       return res.data.data
     } catch(err){
-      console.log(err)
       throw err
     }
   },
@@ -20,7 +19,6 @@ export const kandidatService = {
       const res = await apiPrivate.get(`/kandidat/${id}`)
       return res.data.data
     } catch(err){
-      console.log(err)
       throw err
     }
   },

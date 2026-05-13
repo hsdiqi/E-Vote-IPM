@@ -1,65 +1,58 @@
-import { delay, mockPemilih } from '@/utils/mockData'
-import { generateId } from '@/utils/helpers'
+import { delay, mockPemilih } from "@/utils/mockData";
+import { generateId } from "@/utils/helpers";
+import { apiPrivate } from "./api";
 
-let pemilihList = [...mockPemilih]
+let pemilihList = [...mockPemilih];
 
 export const pemilihService = {
   async getAll(id_pemilu) {
-    await delay()
-    const list = id_pemilu ? pemilihList.filter(p => p.id_pemilu === id_pemilu) : [...pemilihList]
-    return { data: list }
+    try {
+      const res = await apiPrivate.get("/pemilih");
+      return res.data.data;
+    } catch (err) {
+      throw err;
+    }
   },
   async getById(id) {
-    await delay(200)
-    const p = pemilihList.find(p => p.id === id)
-    if (!p) throw { response: { data: { message: 'Pemilih tidak ditemukan' }, status: 404 } }
-    return { data: p }
+    try {
+      const res = await apiPrivate.get(`/pemilih/${id}`);
+      return res.data.data;
+    } catch (err) {}
+    throw err;
   },
   async create(payload) {
-    await delay(600)
-    const token = 'TOKEN-' + generateId().toUpperCase()
-    const newP = {
-      id: 'p-' + generateId(),
-      id_pemilu: payload.id_pemilu,
-      name: payload.name,
-      photo_url: payload.photo_url || null,
-      nomor_anggota: payload.nomor_anggota || null,
-      token_hash: btoa(token),
-      is_used: false,
-      used_at: null,
-      expired_at: payload.expired_at || null,
-      created_at: new Date().toISOString(),
-      updated_at: null
-    }
-    pemilihList.push(newP)
-    return {
-      data: {
-        id_pemilih: newP.id,
-        name: newP.name,
-        token: token,
-        qrcode: `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==`
-      }
+    try {
+      console.log("insert pemilih")
+      const res = await apiPrivate.post(`/pemilih`, payload);
+      console.log("response create: ",res)
+      return res.data.data;
+    } catch (err) {
+      console.log(err)
+      throw err;
     }
   },
   async update(id, payload) {
-    await delay(400)
-    const idx = pemilihList.findIndex(p => p.id === id)
-    if (idx < 0) throw { response: { data: { message: 'Pemilih tidak ditemukan' }, status: 404 } }
-    pemilihList[idx] = { ...pemilihList[idx], ...payload, updated_at: new Date().toISOString() }
-    return { data: pemilihList[idx] }
+    try {
+      const res = await apiPrivate(`/pemilih/${id}`, payload);
+      return res;
+    } catch (err) {
+      throw err;
+    }
   },
   async delete(id) {
-    await delay(400)
-    const idx = pemilihList.findIndex(p => p.id === id)
-    if (idx < 0) throw { response: { data: { message: 'Pemilih tidak ditemukan' }, status: 404 } }
-    pemilihList.splice(idx, 1)
-    return { data: { message: 'Pemilih berhasil dihapus' } }
+    const res = await apiPrivate(`/pemilih/${id}`);
+    if (res !== 200) return null;
+    return res;
   },
-  async generateToken(id) {
-    await delay(500)
-    const p = pemilihList.find(p => p.id === id)
-    if (!p) throw { response: { data: { message: 'Pemilih tidak ditemukan' }, status: 404 } }
-    const token = 'TOKEN-' + generateId().toUpperCase()
-    return { data: { pemilih_id: id, token, expired_at: p.expired_at } }
-  }
-}
+  // async generateToken(id) {
+  //   await delay(500);
+  //   const p = pemilihList.find((p) => p.id === id);
+  //   if (!p)
+  //     throw {
+  //       response: { data: { message: "Pemilih tidak ditemukan" }, status: 404 },
+  //     };
+  //   const token = "TOKEN-" + generateId().toUpperCase();
+  //   return { data: { pemilih_id: id, token, expired_at: p.expired_at } };
+  // },
+};
+

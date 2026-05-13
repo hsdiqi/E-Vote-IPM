@@ -358,13 +358,13 @@ const fetchPemilu = async () => {
   }
 };
 
-const fetchKandidatByPemilu = async () => {
-  try{
+// const fetchKandidatByPemilu = async () => {
+//   try{
 
-  }catch(err) {
-    return 
-  }
-}
+//   }catch(err) {
+//     return 
+//   }
+// }
 
 onMounted(async () => {
   loading.value = true;
